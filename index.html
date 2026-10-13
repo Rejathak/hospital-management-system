@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hospital Management System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="boot" class="boot">Loading…</div>
+
+  <!-- ===== LOGIN ===== -->
+  <main id="login-view" class="login-wrap" hidden>
+    <form id="login-form" class="login-card" novalidate>
+      <div class="brand brand-dark">+ MediCloud HMS</div>
+      <h1>Staff Login</h1>
+      <label>Email
+        <input id="login-email" type="email" autocomplete="username" required>
+      </label>
+      <label>Password
+        <input id="login-password" type="password" autocomplete="current-password" required>
+      </label>
+      <p id="login-error" class="status error" hidden></p>
+      <button id="login-btn" type="submit" class="btn btn-primary btn-block">Sign in</button>
+      <p class="hint">Educational prototype. Use fictional data only.</p>
+    </form>
+  </main>
+
+  <!-- ===== APPLICATION ===== -->
+  <div id="app-view" class="app" hidden>
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">+ MediCloud HMS</div>
+      <nav>
+        <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+        <button class="nav-btn" data-section="patients">Patients</button>
+        <button class="nav-btn" data-section="doctors">Doctors</button>
+        <button class="nav-btn" data-section="appointments">Appointments</button>
+      </nav>
+      <button id="logout-btn" class="btn btn-light">Log out</button>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button id="menu-btn" class="menu-btn" aria-label="Toggle menu">☰</button>
+        <h1 id="page-title">Dashboard</h1>
+        <span id="user-label" class="user-label"></span>
+      </header>
+
+      <!-- Dashboard -->
+      <section id="sec-dashboard" class="section active">
+        <div class="cards">
+          <div class="card stat"><span class="stat-label">Total Patients</span><strong id="stat-patients">…</strong></div>
+          <div class="card stat stat-green"><span class="stat-label">Total Doctors</span><strong id="stat-doctors">…</strong></div>
+          <div class="card stat"><span class="stat-label">Total Appointments</span><strong id="stat-appointments">…</strong></div>
+        </div>
+        <div class="panel">
+          <h2>Latest Appointments</h2>
+          <p id="dash-status" class="status" hidden></p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date &amp; Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr></thead>
+              <tbody id="dash-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Patients -->
+      <section id="sec-patients" class="section">
+        <div class="toolbar">
+          <input id="patient-search" type="search" placeholder="Search name, phone, gender…">
+          <button id="add-patient-btn" class="btn btn-primary">+ Add Patient</button>
+        </div>
+        <p id="patients-status" class="status" hidden></p>
+        <div class="panel"><div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Actions</th></tr></thead>
+            <tbody id="patients-body"></tbody>
+          </table>
+        </div></div>
+      </section>
+
+      <!-- Doctors -->
+      <section id="sec-doctors" class="section">
+        <div class="toolbar">
+          <input id="doctor-search" type="search" placeholder="Search name, specialization, phone…">
+          <button id="add-doctor-btn" class="btn btn-primary">+ Add Doctor</button>
+        </div>
+        <p id="doctors-status" class="status" hidden></p>
+        <div class="panel"><div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Phone</th><th>Actions</th></tr></thead>
+            <tbody id="doctors-body"></tbody>
+          </table>
+        </div></div>
+      </section>
+
+      <!-- Appointments -->
+      <section id="sec-appointments" class="section">
+        <div class="toolbar">
+          <select id="appt-filter" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            <option>Scheduled</option>
+            <option>Completed</option>
+            <option>Cancelled</option>
+          </select>
+          <button id="add-appt-btn" class="btn btn-primary">+ Book Appointment</button>
+        </div>
+        <p id="appointments-status" class="status" hidden></p>
+        <div class="panel"><div class="table-wrap">
+          <table>
+            <thead><tr><th>Date &amp; Time</th><th>Patient</th><th>Doctor</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="appointments-body"></tbody>
+          </table>
+        </div></div>
+      </section>
+    </div>
+
+    <div id="toasts" class="toasts"></div>
+
+    <!-- Patient dialog -->
+    <dialog id="patient-dialog">
+      <form id="patient-form" novalidate>
+        <h2 id="patient-dialog-title">Add Patient</h2>
+        <input type="hidden" id="p-id">
+        <label>Full name<input id="p-name" maxlength="100"></label>
+        <label>Age<input id="p-age" type="number" min="0" max="130"></label>
+        <label>Gender
+          <select id="p-gender">
+            <option value="">Select…</option><option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </label>
+        <label>Phone<input id="p-phone" type="tel" maxlength="20" placeholder="+91 90000 00000"></label>
+        <p id="p-error" class="status error" hidden></p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-light" data-close="patient-dialog">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Doctor dialog -->
+    <dialog id="doctor-dialog">
+      <form id="doctor-form" novalidate>
+        <h2 id="doctor-dialog-title">Add Doctor</h2>
+        <input type="hidden" id="d-id">
+        <label>Full name<input id="d-name" maxlength="100"></label>
+        <label>Specialization<input id="d-spec" maxlength="100"></label>
+        <label>Phone<input id="d-phone" type="tel" maxlength="20" placeholder="+91 90000 00000"></label>
+        <p id="d-error" class="status error" hidden></p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-light" data-close="doctor-dialog">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Appointment dialog -->
+    <dialog id="appointment-dialog">
+      <form id="appointment-form" novalidate>
+        <h2>Book Appointment</h2>
+        <label>Patient<select id="a-patient"></select></label>
+        <label>Doctor<select id="a-doctor"></select></label>
+        <label>Date &amp; time<input id="a-date" type="datetime-local"></label>
+        <label>Status
+          <select id="a-status">
+            <option>Scheduled</option><option>Completed</option><option>Cancelled</option>
+          </select>
+        </label>
+        <p id="a-error" class="status error" hidden></p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-light" data-close="appointment-dialog">Cancel</button>
+          <button type="submit" class="btn btn-primary">Book</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Confirm dialog -->
+    <dialog id="confirm-dialog">
+      <form method="dialog">
+        <h2>Please confirm</h2>
+        <p id="confirm-text"></p>
+        <div class="dialog-actions">
+          <button value="no" class="btn btn-light">Cancel</button>
+          <button value="yes" class="btn btn-danger">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
